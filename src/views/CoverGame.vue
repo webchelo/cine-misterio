@@ -2,14 +2,17 @@
   <div>
     <h1>Adivina la Película por su Portada</h1>
     <div v-if="currentMovie">
-      <!-- Portada de la película -->
-      <img 
-        :src="currentMovie.image ? `https://image.tmdb.org/t/p/w200${currentMovie.image}` : 'https://via.placeholder.com/200'" 
-        alt="Película" 
-        :class="['movie-image', { 'normal-size': !imageZoom }]" 
-      />
+      <div class="movie-container">
+        <img 
+          :src="currentMovie.image ?
+          `https://image.tmdb.org/t/p/w200${currentMovie.image}` :
+          'https://i.pinimg.com/736x/18/42/70/184270e5d389569745c2c5675fcf4a26.jpg'" 
+          alt="Película" 
+          :class="['movie-image', { 'normal-size': !imageZoom }]" 
+        />
 
-      <!-- Opciones de películas -->
+      </div>
+
       <div class="options-container">
         <button
           v-for="(option, index) in options"
@@ -21,7 +24,6 @@
         </button>
       </div>
 
-      <!-- Feedback -->
       <p :class="feedbackClass">{{ feedback }}</p>
     </div>
     <div v-else>
@@ -31,7 +33,7 @@
 </template>
 
 <script>
-import movieService from '../services/movieService.js'; // Importar el servicio
+import movieService from '../services/movieService.js'; 
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -44,24 +46,27 @@ function shuffleArray(array) {
 export default {
   data() {
     return {
-      movies: [], // Almacena las películas
-      currentMovie: null, // Película actual para adivinar
-      options: [], // Opciones de películas
-      feedback: "", // Mensaje de feedback
-      clickedOptions: [], // Opciones que ya han sido clickeadas
-      imageZoom: true, // Estado para el zoom de la imagen
+      movies: [], 
+      currentMovie: null, // Película correcta
+      options: [], // Opciones de películas para elegir
+      feedback: "", 
+      clickedOptions: [], 
+      imageZoom: true,
     };
   },
+
   async created() {
     this.movies = await movieService.getMovies(); // Usar el servicio para obtener películas
     this.newRound(); // Iniciar una nueva ronda
   },
+
   computed: {
     // Clase dinámica para el feedback
     feedbackClass() {
       return this.feedback.includes("✅") ? "correct" : "incorrect";
     },
   },
+
   methods: {
     // Iniciar una nueva ronda
     newRound() {
@@ -103,15 +108,16 @@ export default {
 </script>
 
 <style scoped>
-h1 {
-  font-size: 2rem;
-  color: #2c3e50;
-  text-align: center;
-  margin-bottom: 20px;
+.movie-container {
+  margin: 1rem;
+  height: 35rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .movie-image {
-  width: 60rem;
+  width: 100%;
   height: 15rem;
   object-fit: cover;
   border-radius: 8px;
@@ -119,10 +125,9 @@ h1 {
 }
 
 .normal-size {
-  width: 20rem; /* Ajusta al tamaño normal */
-  height: 30rem; /* Ajusta al tamaño normal */
+  width: 20rem; 
+  height: 30rem; 
 }
-
 
 .options-container {
   display: flex;
@@ -162,5 +167,11 @@ p {
 
 .incorrect {
   color: #e74c3c;
+}
+
+@media (max-width: 600px) {
+  .movie-image {
+    height: 10rem;
+  }
 }
 </style>

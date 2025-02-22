@@ -2,10 +2,10 @@
   <div>
     <h1>Adivina la Película por sus Actores</h1>
     <div v-if="currentMovie">
-      <!-- Componente de actores -->
-      <Actors :actors="displayedActors" />
+        <ActorsCard class="actores-container" :actors="displayedActors" />
 
-      <!-- Botones de opciones -->
+        
+    <div class="buttons-container">
       <div>
         <button
           v-for="(option, index) in options"
@@ -16,19 +16,20 @@
           {{ option }}
         </button>
       </div>
+    </div>
 
-      <!-- Feedback y contador de intentos -->
+    <div class="feedback-container">
       <p :class="feedbackClass" v-if="feedback">{{ feedback }}</p>
       <p>Intentos restantes: {{ attemptsLeft }}</p>
+    </div>
     </div>
   </div>
 </template>
 
 <script>
 import movieService from '../services/movieService.js';
-import Actors from '../components/Actors.vue';
+import ActorsCard from '../components/ActorsCard.vue';
 
-// Función para mezclar un array
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -39,8 +40,9 @@ function shuffleArray(array) {
 
 export default {
   components: {
-    Actors,
+    ActorsCard,
   },
+
   data() {
     return {
       movies: [],
@@ -54,16 +56,18 @@ export default {
       clickedOptions: [],
     };
   },
+
   computed: {
-    // Clase dinámica para el feedback
     feedbackClass() {
       return this.feedback.includes("✅") ? "correct" : "incorrect";
     },
   },
+
   async created() {
     this.movies = await movieService.getTopRatedMovies();
     this.newRound();
   },
+
   methods: {
     async newRound() {
       this.attemptsLeft = 3;
@@ -126,15 +130,7 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
-
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 2.5rem;
-  color: #2c3e50;
-  margin-bottom: 20px;
-  text-align: center;
 }
 
 .actores-container {
@@ -142,6 +138,8 @@ h1 {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  margin: 2rem;
+  gap: 1.2rem;
 }
 
 .actor-container {
@@ -161,6 +159,11 @@ h1 {
 .actor-name {
   font-size: 1.2rem;
   color: #34495e;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: center;
 }
 
 button {
@@ -189,11 +192,18 @@ button:active:not(:disabled) {
   transform: translateY(0);
 }
 
+.feedback-container {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 2rem;
+}
+
 p {
   font-size: 1.2rem;
   margin-top: 20px;
-  color: #27ae60;
   font-weight: bold;
+  color: #2c3e50;
 }
 
 .correct {

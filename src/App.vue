@@ -14,3 +14,16 @@ export default {
   },
 };
 </script>
+
+<style>
+body {
+  font-family: Ubuntu, Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  text-align: center;
+  margin-top: 1rem;
+}
+</style>
