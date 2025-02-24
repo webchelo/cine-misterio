@@ -1,81 +1,64 @@
-// movieService.js
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY; // (Api key alojada en el archivo .env)
 
-export default {
-  // Obtener películas mejor puntuadas
-  async getTopRatedMovies() {
-    const totalPages = 3; // Número de páginas que quieres obtener
-    const allMovies = [];
+/**
+ * Obtener películas mejor puntuadas
+ * @returns {Promise<Array<{title: String, image: String | null}>>} La API puede retornar null en poster_path
+ */
+export const getMovies = async () => {
+  const totalPages = 10; // Número de páginas que quieres obtener TODO: agregar dificultad (totalPages como parámetro, mientra mas páginas, más dificil)
+  const allMovies = [];
 
-    try {
-      for (let page = 1; page <= totalPages; page++) {
-        const url = new URL("https://api.themoviedb.org/3/movie/top_rated");
-        url.searchParams.append("api_key", API_KEY);
-        url.searchParams.append("language", "es-ES");
-        url.searchParams.append("page", page);
+  try {
+    for (let page = 1; page <= totalPages; page++) {
 
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-        const data = await response.json();
-        allMovies.push(...data.results);
-      }
+      const url = new URL("https://api.themoviedb.org/3/movie/top_rated");
+      url.searchParams.append("api_key", API_KEY);
+      url.searchParams.append("language", "es-ES");
+      url.searchParams.append("page", page);
 
-      return allMovies.map((movie) => ({
-        id: movie.id,
-        title: movie.title,
-      }));
-    } catch (error) {
-      console.error("Error fetching top-rated movies:", error);
-      return [];
-    }
-  },
-
-  // Obtener el elenco de una película
-  async getMovieCast(movieId) {
-    const url = new URL(`https://api.themoviedb.org/3/movie/${movieId}/credits`);
-    url.searchParams.append("api_key", API_KEY);
-
-    try {
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
       const data = await response.json();
-      return data.cast.slice(0, 3); // Tomar los primeros 3 actores
-    } catch (error) {
-      console.error("Error fetching movie cast:", error);
-      return [];
+      allMovies.push(...data.results);
     }
-  },
 
-  async getMovies() {
-    const totalPages = 3; // Número de páginas que quieres obtener
-    const allMovies = [];
-    try {
-      for (let page = 1; page <= totalPages; page++) {
-        const url = new URL("https://api.themoviedb.org/3/movie/top_rated");
-        url.searchParams.append("api_key", API_KEY);
-        url.searchParams.append("language", "es-ES");
-        url.searchParams.append("page", page);
+    return allMovies.map(({id, title, poster_path}) => ({
+      id,
+      title,
+      poster_path
+    }));
 
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-        const data = await response.json();
-        allMovies.push(...data.results);
-        console.log({allMovies})
-      }
-      return allMovies.map((movie) => ({
-        title: movie.title,
-        image: movie.poster_path,
-      }));
-    } catch (error) {
-      console.error("Error fetching movies:", error);
-      return [];
+  } catch (error) {
+    console.error("Fetch error en getMovies():", error);
+    return [];
+  }
+}
+
+/**
+ * Obtener el elenco de una película a partir de su ID
+ * @param {Number} movieId 
+ * @returns {Promise<Array<{name: String, profile_path: String | null}>>} La API puede retornar null en poster_path
+ */
+export const getMovieCast = async ( movieId ) => {
+  const url = new URL(`https://api.themoviedb.org/3/movie/${movieId}/credits`);
+  url.searchParams.append( "api_key", API_KEY );
+
+  try {
+    const response = await fetch( url );
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
-  },
+    const data = await response.json();
+    const actors = data.cast.slice(0, 3); // Tomar únicamente los primeros 3 actores
 
-};
+    return actors.map(({ name, profile_path }) => ({
+      name,
+      profile_path
+    }));
+  } catch ( error ) {
+    console.error("Fetch error en getMovieCast():", error);
+    return [];
+  }
+}

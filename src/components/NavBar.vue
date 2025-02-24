@@ -14,7 +14,7 @@
     background: #222;
     padding: 10px;
   }
-  router-link {
+  a {
     color: white;
     text-decoration: none;
   }

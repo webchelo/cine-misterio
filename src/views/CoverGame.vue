@@ -1,16 +1,15 @@
 <template>
-  <div>
+  <div :class="{'fade-in': isMounted}">
     <h1>Adivina la Película por su Portada</h1>
     <div v-if="currentMovie">
       <div class="movie-container">
         <img 
-          :src="currentMovie.image ?
-          `https://image.tmdb.org/t/p/w200${currentMovie.image}` :
+          :src="currentMovie.poster_path ?
+          `https://image.tmdb.org/t/p/w200${currentMovie.poster_path}` :
           'https://i.pinimg.com/736x/18/42/70/184270e5d389569745c2c5675fcf4a26.jpg'" 
           alt="Película" 
-          :class="['movie-image', { 'normal-size': !imageZoom }]" 
+          :class="['movie-image', { 'normal-size': !imageZoom, 'pop-up': isNewRound }]" 
         />
-
       </div>
 
       <div class="options-container">
@@ -33,7 +32,7 @@
 </template>
 
 <script>
-import movieService from '../services/movieService.js'; 
+import { getMovies } from '../services/movieService.js'; 
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -52,13 +51,23 @@ export default {
       feedback: "", 
       clickedOptions: [], 
       imageZoom: true,
+      // animaciones
+      isMounted: false,
+      isNewRound: false,
     };
   },
 
   async created() {
-    this.movies = await movieService.getMovies(); // Usar el servicio para obtener películas
+    this.movies = await getMovies(); // Usar el servicio para obtener películas
     this.newRound(); // Iniciar una nueva ronda
   },
+
+  mounted() {
+    setTimeout(() => {
+      this.isMounted = true;
+    }, 10); // Aseguro la carga del DOM
+  },
+
 
   computed: {
     // Clase dinámica para el feedback
@@ -75,7 +84,12 @@ export default {
       this.options = shuffled.slice(0, 4).map((m) => m.title); // Seleccionar 4 opciones
       this.options = shuffleArray(this.options)
       this.clickedOptions = []; // Reiniciar las opciones clickeadas
-      console.log(this.currentMovie)
+
+      // Activar la animación de pop-up
+      this.isNewRound = true;
+      setTimeout(() => {
+        this.isNewRound = false; // Reiniciar la animación
+      }, 500); // Duración de la animación
     },
 
     // Verificar si un botón está deshabilitado
@@ -167,6 +181,39 @@ p {
 
 .incorrect {
   color: #e74c3c;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pop-up {
+  animation: popUp 0.5s ease-in-out;
+}
+
+@keyframes popUp {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 600px) {

@@ -1,33 +1,34 @@
 <template>
   <div>
-    <h1>Adivina la Película por sus Actores</h1>
-    <div v-if="currentMovie">
-        <ActorsCard class="actores-container" :actors="displayedActors" />
-
-        
-    <div class="buttons-container">
-      <div>
-        <button
-          v-for="(option, index) in options"
-          :key="index"
-          @click="checkAnswer(option)"
-          :disabled="isButtonDisabled(option)"
-        >
-          {{ option }}
-        </button>
+    <div :class="{'fade-in': isMounted}">
+      <h1>Adivina la Película por sus Actores</h1>
+      <div v-if="currentMovie">
+        <div class="actores-container" :class="{'slide-in': isNewRound}">
+          <ActorsCard :actors="displayedActors" />
+        </div>
+        <div class="buttons-container">
+          <div>
+            <button
+              v-for="(option, index) in options"
+              :key="index"
+              @click="checkAnswer(option)"
+              :disabled="isButtonDisabled(option)"
+            >
+              {{ option }}
+            </button>
+          </div>
+        </div>
+        <div class="feedback-container">
+          <p :class="feedbackClass" v-if="feedback">{{ feedback }}</p>
+          <p>Intentos restantes: {{ attemptsLeft }}</p>
+        </div>
       </div>
-    </div>
-
-    <div class="feedback-container">
-      <p :class="feedbackClass" v-if="feedback">{{ feedback }}</p>
-      <p>Intentos restantes: {{ attemptsLeft }}</p>
-    </div>
     </div>
   </div>
 </template>
 
 <script>
-import movieService from '../services/movieService.js';
+import { getMovies, getMovieCast } from '../services/movieService.js';
 import ActorsCard from '../components/ActorsCard.vue';
 
 function shuffleArray(array) {
@@ -54,6 +55,9 @@ export default {
       actorIndex: 0,
       attemptsLeft: 3,
       clickedOptions: [],
+      // Para animaciones
+      isMounted: false,
+      isNewRound: false
     };
   },
 
@@ -64,9 +68,16 @@ export default {
   },
 
   async created() {
-    this.movies = await movieService.getTopRatedMovies();
+    this.movies = await getMovies();
     this.newRound();
   },
+
+  mounted() {
+    setTimeout(() => {
+      this.isMounted = true;
+    }, 10); // Aseguro la carga del DOM
+  },
+
 
   methods: {
     async newRound() {
@@ -77,7 +88,7 @@ export default {
       const randomIndex = Math.floor(Math.random() * this.movies.length);
       this.currentMovie = this.movies[randomIndex];
 
-      this.allActors = await movieService.getMovieCast(this.currentMovie.id);
+      this.allActors = await getMovieCast(this.currentMovie.id);
       this.displayedActors = [this.allActors[0]];
       this.actorIndex = 1;
 
@@ -89,6 +100,12 @@ export default {
 
       const allOptions = [...otherMovies, this.currentMovie.title];
       this.options = shuffleArray(allOptions);
+
+      // Activo la animación de desplazamiento
+      this.isNewRound = true;
+      setTimeout(() => {
+        this.isNewRound = false;
+      }, 500);
     },
 
     isButtonDisabled(option) {
@@ -133,7 +150,7 @@ body {
   min-height: 100vh;
 }
 
-.actores-container {
+.actores-container > div {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,8 +178,9 @@ body {
   color: #34495e;
 }
 
-.buttons-container {
+.buttons-container > div {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
 }
 
@@ -197,6 +215,7 @@ button:active:not(:disabled) {
   justify-content: center;
   align-items: baseline;
   gap: 2rem;
+  margin-bottom: 3rem;
 }
 
 p {
@@ -212,6 +231,33 @@ p {
 
 .incorrect {
   color: #e74c3c;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.5s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 @media (max-width: 600px) {
