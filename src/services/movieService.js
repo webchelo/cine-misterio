@@ -2,10 +2,10 @@ const API_KEY = import.meta.env.VITE_TMDB_API_KEY; // (Api key alojada en el arc
 
 /**
  * Obtener películas mejor puntuadas
- * @returns {Promise<Array<{title: String, image: String | null}>>} La API puede retornar null en poster_path
+ * @returns {Promise<Array<{title: String, image: String, poster_path: String | null}>>} La API puede retornar null en poster_path
  */
 export const getMovies = async () => {
-  const totalPages = 10; // Número de páginas que quieres obtener TODO: agregar dificultad (totalPages como parámetro, mientra mas páginas, más dificil)
+  const totalPages = 10;
   const allMovies = [];
 
   try {

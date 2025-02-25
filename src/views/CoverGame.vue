@@ -25,6 +25,9 @@
 
       <p :class="feedbackClass">{{ feedback }}</p>
     </div>
+    <div v-else-if="movies.length > 0 && shownMovies.length === movies.length">
+      <p class="end-game">🎬 Fin del juego 🎬</p>
+    </div>
     <div v-else>
       <p>Cargando películas...</p>
     </div>
@@ -32,34 +35,30 @@
 </template>
 
 <script>
+import { getStats, saveStats } from '../services/statsService.js';
 import { getMovies } from '../services/movieService.js'; 
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
+import { shuffleArray } from '../services/shuffleArray.js';
 
 export default {
   data() {
     return {
       movies: [], 
-      currentMovie: null, // Película correcta
-      options: [], // Opciones de películas para elegir
+      currentMovie: null, 
+      options: [], 
       feedback: "", 
       clickedOptions: [], 
       imageZoom: true,
+      shownMovies: [],
       // animaciones
       isMounted: false,
       isNewRound: false,
+      isRoundEnded: false,
     };
   },
 
   async created() {
-    this.movies = await getMovies(); // Usar el servicio para obtener películas
-    this.newRound(); // Iniciar una nueva ronda
+    this.movies = await getMovies(); 
+    this.newRound();
   },
 
   mounted() {
@@ -67,7 +66,6 @@ export default {
       this.isMounted = true;
     }, 10); // Aseguro la carga del DOM
   },
-
 
   computed: {
     // Clase dinámica para el feedback
@@ -77,48 +75,130 @@ export default {
   },
 
   methods: {
-    // Iniciar una nueva ronda
+    /**
+     * Inicia una nueva ronda del juego
+     * Coordina la selección de una película, generación de opciones y reinicio del estado
+     */
     newRound() {
-      const shuffled = [...this.movies].sort(() => 0.5 - Math.random());
-      this.currentMovie = shuffled[0]; // Seleccionar una película aleatoria
-      this.options = shuffled.slice(0, 4).map((m) => m.title); // Seleccionar 4 opciones
-      this.options = shuffleArray(this.options)
-      this.clickedOptions = []; // Reiniciar las opciones clickeadas
+      const selectedMovie = this.selectRandomMovie();
+      if (!selectedMovie) {
+        this.currentMovie = null;
+        return;
+      }
 
-      // Activar la animación de pop-up
+      this.currentMovie = selectedMovie;
+      this.generateOptions();
+      this.resetRoundState();
+      this.triggerAnimation();
+      this.isRoundEnded = false;
+    },
+
+    /**
+     * Selecciona una película aleatoria que no haya sido mostrada antes
+     * @returns {Object|null} - La película seleccionada o `null` si no quedan películas
+     */
+    selectRandomMovie() {
+      const availableMovies = this.movies.filter(movie => !this.shownMovies.includes(movie.id));
+      if (availableMovies.length === 0) {
+        return null;
+      }
+
+      const randomIndex = Math.floor(Math.random() * availableMovies.length);
+      const selectedMovie = availableMovies[randomIndex];
+      this.shownMovies.push(selectedMovie.id);
+      return selectedMovie;
+    },
+
+    // - Genera las opciones de respuesta para la ronda actual.
+    // - Mezcla las opciones para que la respuesta correcta esté en una posición aleatoria.
+    generateOptions() {
+      const otherMovies = this.movies
+        .filter(movie => movie.id !== this.currentMovie.id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .map(movie => movie.title);
+
+      this.options = shuffleArray([...otherMovies, this.currentMovie.title]);
+    },
+
+    // - Reinicia el estado de la ronda.
+    // - Limpia las opciones clickeadas, el feedback y restablece el zoom de la imagen. 
+    resetRoundState() {
+      this.clickedOptions = [];
+      this.feedback = "";
+      this.imageZoom = true;
+    },
+
+    //Activa la animación de la nueva ronda. 
+    triggerAnimation() {
       this.isNewRound = true;
       setTimeout(() => {
-        this.isNewRound = false; // Reiniciar la animación
-      }, 500); // Duración de la animación
+        this.isNewRound = false; 
+      }, 500);
     },
 
-    // Verificar si un botón está deshabilitado
+    /**
+    * Verifica si un botón de opción debe estar deshabilitado.
+    * Un botón se deshabilita en los siguientes casos:
+    * 1. Si la opción ya fue seleccionada por el usuario.
+    * 2. Si la ronda ha terminado (isRoundEnded es true).
+    *
+    * @param {string} option - La opción (título de la película) asociada al botón.
+    * @returns {boolean} - `true` si el botón debe estar deshabilitado, `false` en caso contrario.
+    */
     isButtonDisabled(option) {
-      return this.clickedOptions.includes(option);
+      return (
+        this.clickedOptions.includes(option) || 
+        this.isRoundEnded
+      );
     },
 
-    // Verificar la respuesta del usuario
+    /**
+    * Verifica la respuesta del usuario.
+    * Si es correcta, muestra un mensaje de éxito y pasa a la siguiente ronda.
+    * Si es incorrecta, muestra un mensaje de error y permite intentar de nuevo.
+    * @param {string} option - La opción seleccionada por el usuario.
+    */
     checkAnswer(option) {
-      this.clickedOptions.push(option); // Bloquear el botón clickeado
+      this.clickedOptions.push(option);
 
       if (option === this.currentMovie.title) {
         this.feedback = "✅ ¡Correcto!";
-        this.imageZoom = false; // Hacer que la imagen vuelva a su tamaño normal
+        this.imageZoom = false;
+        this.isRoundEnded = true;
+
+        // Guardado de estadísticas
+        const stats = getStats("portadas");
+        stats.attempts += 1;
+        stats.correct += 1;
+        stats.guessedMovies.push(this.currentMovie);
+        saveStats("portadas", stats);
+
+        setTimeout(() => {
+          this.feedback = "";
+          this.imageZoom = true;
+          this.newRound();
+        }, 2000);
       } else {
         this.feedback = "❌ Incorrecto, intenta de nuevo.";
-        this.imageZoom = false; 
+        this.imageZoom = false;
+        this.isRoundEnded = true;
+
+        // Guardado de estadísticas
+        const stats = getStats("portadas");
+        stats.attempts += 1;
+        stats.errors += 1;
+        saveStats("portadas", stats);
+
+        setTimeout(() => {
+          this.feedback = "";
+          this.imageZoom = true;
+          this.newRound();
+        }, 2000);
       }
-
-      // Iniciar una nueva ronda después de 2 segundos
-      setTimeout(() => {
-        this.feedback = "";
-        this.imageZoom = true; // Volver a hacer el zoom de la imagen para la siguiente ronda
-        this.newRound();
-      }, 2000);
     }
-
-  },
-};
+  }
+}
 </script>
 
 <style scoped>
@@ -144,10 +224,14 @@ export default {
 }
 
 .options-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(1, auto); 
   gap: 10px;
   justify-content: center;
+  margin: 10px auto;
+  max-width: 60rem;
+
 }
 
 button {
@@ -181,6 +265,13 @@ p {
 
 .incorrect {
   color: #e74c3c;
+}
+
+.end-game {
+  font-size: 2rem;
+  color: #34495e;
+  text-align: center;
+  margin-top: 2rem;
 }
 
 .fade-in {
@@ -219,6 +310,11 @@ p {
 @media (max-width: 600px) {
   .movie-image {
     height: 10rem;
+  }
+
+  .options-container {
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(4, auto); 
   }
 }
 </style>

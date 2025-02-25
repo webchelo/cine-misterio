@@ -47,12 +47,6 @@ export default {
 </script>
 
 <style scoped>
-h1 {
-  font-size: 2rem;
-  color: #2c3e50;
-  text-align: center;
-  margin-bottom: 20px;
-}
 
 ul {
   list-style: none;

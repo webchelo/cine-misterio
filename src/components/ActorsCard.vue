@@ -1,7 +1,9 @@
 <template>
   <div>
     <div v-for="(actor, index) in actors" :key="index" class="actor-container">
-      <img :src="actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'" alt="Actor" class="actor-image" />
+      <img :src="actor.profile_path ?
+        `https://image.tmdb.org/t/p/w200${actor.profile_path}` :
+        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'" alt="Actor" class="actor-image" />
       <p class="actor-name">{{ actor.name }}</p>
     </div>
   </div>
