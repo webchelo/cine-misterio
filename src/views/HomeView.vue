@@ -1,15 +1,17 @@
 <template>
-	<div>
-		<h1>Películas Populares</h1>
-		<div v-if="movies.length > 0">
-			<ul>
-				<li v-for="movie in movies" :key="movie.id">
-					{{ movie.title }}
-				</li>
-			</ul>
+	<div class="container">
+		<div class="header">
+			<h1>¡Bienvenido a Cine Misterio!</h1>
+			<div class="image-container">
+				<img src="../assets/img/Metropolis_091Pyxurz.jpg" alt="Profesor Rotwang en Metrópolis">
+			</div>
 		</div>
-		<div v-else>
-			<p>Cargando películas...</p>
+		<div class="content">
+			<p>Cine Misterio tiene dos juegos: Adivinar la Película por sus Actores y Adivinar la Película por su Portada.</p>
+			<p>Para jugar, simplemente seleccioná el juego que desees y comenzá a adivinar las películas según las pistas que te son dadas.</p>
+			<p>¡Buena suerte!</p>
+			<router-link to="/actors-game" class="button">Adivinar por Actores</router-link>
+			<router-link to="/cover-game" class="button">Adivinar por Portada</router-link>
 		</div>
 	</div>
 </template>
@@ -18,46 +20,97 @@
 export default {
 	data() {
 		return {
-			movies: [], // Almacena las películas populares
-		};
-	},
-	async created() {
-		await this.fetchPopularMovies(); // Llama a la función para obtener películas al crear el componente
-	},
-	methods: {
-		async fetchPopularMovies() {
-			try {
-				const API_KEY = import.meta.env.VITE_TMDB_API_KEY; // Usa tu API Key de TMDb
-				const url = new URL("https://api.themoviedb.org/3/movie/popular");
-				url.searchParams.append("api_key", API_KEY);
-				url.searchParams.append("language", "es-ES"); // Idioma en español
 
-				const response = await fetch(url);
-				if (!response.ok) {
-					throw new Error(`Error: ${response.status} - ${response.statusText}`);
-				}
-				const data = await response.json();
-				this.movies = data.results; // Guarda las películas en el array
-			} catch (error) {
-				console.error("Error fetching popular movies:", error);
-			}
-		},
+		};
 	},
 };
 </script>
 
 <style scoped>
-ul {
-	list-style: none;
-	padding: 0;
+.container {
+	text-align: center;
+	padding: 20px;
+	background-color: #1a1a1a;
+	color: #fff;
+	font-family: 'Arial', sans-serif;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
-li {
-	background-color: #f9f9f9;
-	padding: 10px;
-	margin: 5px 0;
+.header {
+	animation: fadeIn 2s ease-in-out;
+}
+
+.header h1 {
+	font-size: 3rem;
+	color: #3f51b5;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+	margin-bottom: 20px;
+}
+
+.image-container img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 15px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.content {
+	margin-top: 30px;
+	max-width: 600px;
+	animation: slideUp 1.5s ease-in-out;
+}
+
+.content p {
+	font-size: 1.2rem;
+	line-height: 1.6;
+	margin-bottom: 15px;
+	color: #ddd;
+}
+
+.content p:nth-child(3) {
+	font-weight: bold;
+	color: #3f51b5;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.button {
+	background-color: white;
+	color: black;
+	padding: 10px 20px;
+	border: none;
 	border-radius: 5px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-	text-align: center;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	margin: 2rem 1rem;
+	text-decoration: none;
+}
+
+.button:hover {
+	background-color: #3f51b5;
+	color: white;
 }
 </style>

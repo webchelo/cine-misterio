@@ -16,7 +16,7 @@
 				</v-btn>
 			</div>
 
-			<p :class="feedbackClass">{{ feedback }}</p>
+			<v-alert v-if="showFeedback" :type="feedbackClass" style="text-align: center; width: 30rem; margin: 0 auto; text-indent: -2rem;">{{ feedback }}</v-alert>
 		</div>
 		<div v-else-if="movies.length > 0 && shownMovies.length === movies.length">
 			<p class="end-game">🎬 Fin del juego 🎬</p>
@@ -42,6 +42,7 @@ export default {
 			clickedOptions: [],
 			imageZoom: true,
 			shownMovies: [],
+			showFeedback: false,
 			// animaciones
 			isMounted: false,
 			isNewRound: false,
@@ -63,7 +64,7 @@ export default {
 	computed: {
 		// Clase dinámica para el feedback
 		feedbackClass() {
-			return this.feedback.includes("✅") ? "correct" : "incorrect";
+			return this.feedback.includes("✅") ? "success" : "error";
 		},
 	},
 
@@ -154,6 +155,7 @@ export default {
 		*/
 		checkAnswer(option) {
 			this.clickedOptions.push(option);
+			this.showFeedback = true; 
 
 			if (option === this.currentMovie.title) {
 				this.feedback = "✅ ¡Correcto!";
@@ -170,6 +172,7 @@ export default {
 				setTimeout(() => {
 					this.feedback = "";
 					this.imageZoom = true;
+					this.showFeedback = false;
 					this.newRound();
 				}, 2000);
 			} else {
@@ -186,6 +189,7 @@ export default {
 				setTimeout(() => {
 					this.feedback = "";
 					this.imageZoom = true;
+					this.showFeedback = false;
 					this.newRound();
 				}, 2000);
 			}
@@ -218,8 +222,8 @@ export default {
 
 .options-container {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-template-rows: repeat(1, auto);
+	grid-template-columns: repeat(1, 1fr);
+	grid-template-rows: repeat(4, auto);
 	gap: 10px;
 	justify-content: center;
 	margin: 10px auto;
@@ -228,7 +232,7 @@ export default {
 }
 
 button {
-	background-color: #3498db;
+	background-color: #3f51b5;
 	color: white;
 	border: none;
 	padding: 10px 20px;
@@ -244,7 +248,8 @@ button:disabled {
 }
 
 button:hover:not(:disabled) {
-	background-color: #2980b9;
+	background-color: #3f51b5;
+	color: white;
 }
 
 p {
@@ -301,13 +306,6 @@ p {
 	100% {
 		transform: scale(1);
 		opacity: 1;
-	}
-}
-
-@media (max-width: 1000px) {
-	.options-container {
-		grid-template-columns: repeat(1, 1fr);
-		grid-template-rows: repeat(4, auto);
 	}
 }
 

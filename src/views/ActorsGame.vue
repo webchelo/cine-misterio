@@ -15,8 +15,8 @@
 					</div>
 				</div>
 				<div class="feedback-container">
-					<p :class="feedbackClass" v-if="feedback">{{ feedback }}</p>
 					<p>Intentos restantes: {{ attemptsLeft }}</p>
+					<v-alert v-if="showFeedback" :type="feedbackClass" style="text-align: center; width: 30rem; margin: 0 auto; text-indent: -2rem;">{{ feedback }}</v-alert>
 				</div>
 			</div>
 			<div v-else-if="movies.length > 0 && shownMovies.length === movies.length">
@@ -53,6 +53,7 @@ export default {
 			clickedOptions: [],
 			shownMovies: [],
 			isRoundEnded: false,
+			showFeedback: false,
 			// Para animaciones
 			isMounted: false,
 			isNewRound: false
@@ -61,7 +62,7 @@ export default {
 
 	computed: {
 		feedbackClass() {
-			return this.feedback.includes("✅") ? "correct" : "incorrect";
+			return this.feedback.includes("✅") ? "success" : "error";
 		},
 	},
 
@@ -174,6 +175,7 @@ export default {
 			this.clickedOptions.push(option);
 
 			if (option === this.currentMovie.title) {
+				this.showFeedback = true;
 				this.feedback = "✅ ¡Correcto!";
 				this.isRoundEnded = true;
 
@@ -186,6 +188,7 @@ export default {
 
 				setTimeout(() => {
 					this.feedback = "";
+					this.showFeedback = false;
 					this.newRound();
 				}, 2000);
 			} else {
@@ -193,6 +196,7 @@ export default {
 
 				if (this.attemptsLeft === 0) {
 					this.feedback = `❌ Incorrecto. La respuesta era: ${this.currentMovie.title}`;
+					this.showFeedback = true;
 					this.isRoundEnded = true;
 
 					// Guardado de estadísticas
@@ -203,6 +207,7 @@ export default {
 
 					setTimeout(() => {
 						this.feedback = "";
+						this.showFeedback = false;
 						this.newRound();
 					}, 2000);
 				} else if (this.actorIndex < this.allActors.length) {
@@ -264,7 +269,7 @@ body {
 }
 
 button {
-	background-color: #3498db;
+	background-color: #3f51b5;
 	color: white;
 	border: none;
 	padding: 12px 24px;
@@ -282,7 +287,8 @@ button:disabled {
 }
 
 button:hover:not(:disabled) {
-	background-color: #2980b9;
+	background-color: #3f51b5;
+	color: white;
 	transform: translateY(-2px);
 }
 
@@ -291,11 +297,11 @@ button:active:not(:disabled) {
 }
 
 .feedback-container {
-	display: flex;
-	justify-content: center;
-	align-items: baseline;
-	gap: 2rem;
 	margin-bottom: 3rem;
+}
+
+.feedback-container > p {
+	text-align: center;
 }
 
 p {
