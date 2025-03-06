@@ -1,11 +1,17 @@
 <template>
-	<div>
-		<NavBar />
-		<router-view />
-	</div>
+	<v-app>
+		<v-main>
+			<NavBar />
+			<router-view />
+
+		</v-main>
+		<FooterSection />
+	</v-app>
+
 </template>
 
-<script>
+<script>	
+import FooterSection from './components/FooterSection.vue';
 import NavBar from './components/NavBar.vue';
 
 export default {

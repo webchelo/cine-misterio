@@ -10,10 +10,10 @@
 			</div>
 
 			<div class="options-container">
-				<button v-for="(option, index) in options" :key="index" @click="checkAnswer(option)"
+				<v-btn v-for="(option, index) in options" :key="index" @click="checkAnswer(option)"
 					:disabled="isButtonDisabled(option)">
 					{{ option }}
-				</button>
+				</v-btn>
 			</div>
 
 			<p :class="feedbackClass">{{ feedback }}</p>
@@ -235,6 +235,7 @@ button {
 	border-radius: 5px;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
+	min-width: fit-content !important;
 }
 
 button:disabled {
@@ -303,14 +304,16 @@ p {
 	}
 }
 
-@media (max-width: 600px) {
-	.movie-image {
-		height: 10rem;
-	}
-
+@media (max-width: 1000px) {
 	.options-container {
 		grid-template-columns: repeat(1, 1fr);
 		grid-template-rows: repeat(4, auto);
+	}
+}
+
+@media (max-width: 600px) {
+	.movie-image {
+		height: 10rem;
 	}
 }
 </style>

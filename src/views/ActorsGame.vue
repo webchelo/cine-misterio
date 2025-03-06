@@ -8,10 +8,10 @@
 				</div>
 				<div class="buttons-container">
 					<div>
-						<button v-for="(option, index) in options" :key="index" @click="checkAnswer(option)"
+						<v-btn elevation="2" v-for="(option, index) in options" :key="index" @click="checkAnswer(option)"
 							:disabled="isButtonDisabled(option)">
 							{{ option }}
-						</button>
+						</v-btn>
 					</div>
 				</div>
 				<div class="feedback-container">
@@ -273,6 +273,7 @@ button {
 	cursor: pointer;
 	transition: background-color 0.3s ease, transform 0.2s ease;
 	width: 100%;
+	min-width: fit-content !important;
 }
 
 button:disabled {
@@ -348,6 +349,17 @@ p {
 	}
 }
 
+@media (max-width: 1000px) {
+	.buttons-container>div {
+		display: grid;
+		grid-template-columns: repeat(1, 1fr);
+		grid-template-rows: repeat(6, auto);
+		gap: 10px;
+		justify-content: center;
+		margin: 10px;
+	}
+}
+
 @media (max-width: 600px) {
 	h1 {
 		font-size: 2rem;
@@ -362,13 +374,6 @@ p {
 		font-size: 1rem;
 	}
 
-	.buttons-container>div {
-		display: grid;
-		grid-template-columns: repeat(1, 1fr);
-		grid-template-rows: repeat(6, auto);
-		gap: 10px;
-		justify-content: center;
-		margin: 10px;
-	}
+
 }
 </style>

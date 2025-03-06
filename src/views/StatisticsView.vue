@@ -3,13 +3,12 @@
 		<h1>Estadísticas</h1>
 
 		<div v-for="(stats, gameName) in allStats" :key="gameName" class="game-stats">
-			<h2>{{ gameName === 'actores' ? 'Adivina la Película por sus Actores' : 'Adivina la Película por su Portada'
-				}}</h2>
+			<h2>{{ gameName === 'actores' ? 'Adivina la Película por sus Actores' : 'Adivina la Película por su Portada' }}</h2>
 			<p>Intentos totales: {{ stats.attempts }}</p>
 			<p>Películas adivinadas: <span class="guess">{{ stats.correct }}</span></p>
-			<p>Errores: <span class="error">{{ stats.errors }}</span></p>
+			<p>Errores: <span class="error-guess">{{ stats.errors }}</span></p>
+			<v-divider></v-divider>
 		</div>
-
 		<h2>Colección de Películas Adivinadas</h2>
 		<div class="movie-collection">
 			<div v-for="movie in combinedMovies" :key="movie.id" class="movie-card">
@@ -31,6 +30,7 @@ export default {
 			combinedMovies: [],
 		};
 	},
+	
 	created() {
 		this.allStats = getAllStats();
 		this.combinedMovies = getCombinedGuessedMovies();
@@ -39,6 +39,10 @@ export default {
 </script>
 
 <style scoped>
+h2 {
+	margin-bottom: 1rem;
+}
+
 .stats-container {
 	padding: 20px;
 	text-align: center;
@@ -67,7 +71,7 @@ export default {
 	object-fit: cover;
 }
 
-.error {
+.error-guess {
 	color: tomato;
 	font-weight: bold
 }
