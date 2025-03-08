@@ -17,6 +17,7 @@ export const getMovies = async () => {
 			const data = await response.json();
 			allMovies.push(...data.results);
 		}
+		console.log(allMovies)
 
 		return allMovies.map(({ id, title, poster_path }) => ({
 			id,

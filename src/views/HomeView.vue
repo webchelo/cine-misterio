@@ -28,8 +28,11 @@ export default {
 
 <style scoped>
 .container {
+	margin:0;
+	min-width: 100%;
 	text-align: center;
-	padding: 20px;
+	padding: 1rem;
+	padding-bottom: 4rem;
 	background-color: #1a1a1a;
 	color: #fff;
 	font-family: 'Arial', sans-serif;
