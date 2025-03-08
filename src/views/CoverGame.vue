@@ -163,10 +163,10 @@ export default {
 				saveStats("portadas", stats);
 
 				setTimeout(() => {
-				this.feedback = "";
-				this.imageZoom = true;
-				this.showFeedback = false;
-				this.newRound();
+					this.feedback = "";
+					this.imageZoom = true;
+					this.showFeedback = false;
+					this.newRound();
 				}, 2000);
 			} else {
 				this.feedback = `❌ Incorrecto. La respuesta correcta es "${this.currentMovie.title}"`;

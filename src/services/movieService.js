@@ -17,7 +17,6 @@ export const getMovies = async () => {
 			const data = await response.json();
 			allMovies.push(...data.results);
 		}
-		console.log(allMovies)
 
 		return allMovies.map(({ id, title, poster_path }) => ({
 			id,
@@ -27,7 +26,7 @@ export const getMovies = async () => {
 
 	} catch (error) {
 		console.error("Fetch error en getMovies():", error);
-		throw error;
+		return [];
 	}
 }
 
@@ -50,6 +49,6 @@ export const getMovieCast = async ( movieId ) => {
 		}));
 	} catch (error) {
 		console.error("Fetch error en getMovieCast():", error);
-		throw error;
+		return [];
 	}
 }

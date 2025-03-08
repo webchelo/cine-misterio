@@ -6,26 +6,26 @@
         :class="['movie-image', { 'normal-size': !imageZoom, 'pop-up': isNewRound }]"
       />
     </div>
-  </template>
+</template>
   
-  <script>
-  export default {
+<script>
+export default {
     props: {
-      imageUrl: {
-        type: String,
-        required: true,
-      },
-      imageZoom: {
-        type: Boolean,
-        required: true,
-      },
-      isNewRound: {
-        type: Boolean,
-        required: true,
-      },
+        imageUrl: {
+            type: String,
+            required: true,
+        },
+        imageZoom: {
+            type: Boolean,
+            required: true,
+        },
+        isNewRound: {
+            type: Boolean,
+            required: true,
+        },
     },
-  };
-  </script>
+};
+</script>
   
 <style scoped>
 .movie-container {

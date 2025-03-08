@@ -16,16 +16,6 @@
 	</div>
 </template>
 
-<script>
-export default {
-	data() {
-		return {
-
-		};
-	},
-};
-</script>
-
 <style scoped>
 .container {
 	margin:0;

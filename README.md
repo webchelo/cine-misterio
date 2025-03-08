@@ -1,25 +1,13 @@
 # cine-misterio
 
-## Project setup
+Una juego sobre adivinar películas por medio de pistas.
+
+## Arrancar el proyecto
+
 ```
-npm install
+    npm install
 ```
 
-### Compiles and hot-reloads for development
 ```
-npm run serve
+    npm run dev
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
-# cine-misterio
