@@ -27,7 +27,7 @@ export default {
         },
         attemptsLeft: {
             type: Number,
-            required: true,
+            required: false,
         },
         isRoundEnded: {
             type: Boolean,

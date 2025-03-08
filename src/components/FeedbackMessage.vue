@@ -24,7 +24,7 @@
         },
         attemptsLeft: {
             type: Number,
-            required: true,
+            required: false,
         },
         showFeedback: {
             type: Boolean,
