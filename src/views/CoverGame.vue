@@ -66,7 +66,7 @@ export default {
 	mounted() {
 		setTimeout(() => {
 			this.isMounted = true;
-		}, 10);
+		}, 10); // Aseguro la carga del DOM
 	},
 	computed: {
 		feedbackClass() {
@@ -74,6 +74,10 @@ export default {
 		},
 	},
 	methods: {
+		/**
+		 * Inicia una nueva ronda del juego
+		 * Coordina la selección de una película, generación de opciones y reinicio del estado
+		 */
 		newRound() {
 			const selectedMovie = this.selectRandomMovie();
 			if (!selectedMovie) {
@@ -86,6 +90,11 @@ export default {
 			this.triggerAnimation();
 			this.isRoundEnded = false;
 		},
+
+		/**
+		 * Selecciona una película aleatoria que no haya sido mostrada antes
+		 * @returns {Object|null} - La película seleccionada o `null` si no quedan películas
+		 */
 		selectRandomMovie() {
 			const availableMovies = this.movies.filter(movie => !this.shownMovies.includes(movie.id));
 			if (availableMovies.length === 0) {
@@ -96,6 +105,11 @@ export default {
 			this.shownMovies.push(selectedMovie.id);
 			return selectedMovie;
 		},
+
+		/**
+		 * - Genera las opciones de respuesta para la ronda actual.
+		 * - Mezcla las opciones para que la respuesta correcta esté en una posición aleatoria. 
+		 */
 		generateOptions() {
 			const otherMovies = this.movies
 				.filter(movie => movie.id !== this.currentMovie.id)
@@ -105,17 +119,34 @@ export default {
 
 			this.options = shuffleArray([...otherMovies, this.currentMovie.title]);
 		},
+
+		/**
+		 * - Reinicia el estado de la ronda.
+		 * - Limpia las opciones clickeadas, el feedback y restablece el zoom de la imagen. 
+		 */
 		resetRoundState() {
 			this.clickedOptions = [];
 			this.feedback = "";
 			this.imageZoom = true;
 		},
+
+		/**
+		 * Activa la animación de la nueva ronda. 
+		 */
 		triggerAnimation() {
 			this.isNewRound = true;
 			setTimeout(() => {
 				this.isNewRound = false;
 			}, 500);
 		},
+
+		/**
+		*
+		* Verifica la respuesta del usuario.
+		* Si es correcta, muestra un mensaje de éxito y pasa a la siguiente ronda.
+		* Si es incorrecta, muestra un mensaje de error y permite intentar de nuevo.
+		* @param {string} option - La opción seleccionada por el usuario.
+		 */
 		checkAnswer(option) {
 			this.clickedOptions.push(option);
 			this.showFeedback = true;
@@ -138,7 +169,7 @@ export default {
 				this.newRound();
 				}, 2000);
 			} else {
-				this.feedback = "❌ Incorrecto, intenta de nuevo.";
+				this.feedback = `❌ Incorrecto. La respuesta correcta es "${this.currentMovie.title}"`;
 				this.imageZoom = false;
 				this.isRoundEnded = true;
 

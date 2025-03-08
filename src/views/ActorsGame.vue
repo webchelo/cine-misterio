@@ -73,10 +73,15 @@ export default {
 	},
 	mounted() {
 		setTimeout(() => {
-		this.isMounted = true;
-		}, 10);
+			this.isMounted = true;
+		}, 10); // Aseguro la carga del DOM
 	},
 	methods: {
+		/**
+		* Inicia una nueva ronda del juego "Adivina la Película por actores"
+		* @async
+		* @returns {Promise<void>}
+		*/
 		async newRound() {
 			this.resetGameState();
 			const movieSelected = this.selectRandomMovie();
@@ -90,12 +95,20 @@ export default {
 			this.triggerAnimation();
 			this.isRoundEnded = false;
 		},
+
+		/**
+		 * Restablece el estado inicial de la ronda
+		 */
 		resetGameState() {
 			this.attemptsLeft = 3;
 			this.clickedOptions = [];
 			this.feedback = "";
 			this.shownMovies = [];
 		},
+
+		/**
+		 * Selecciona aleatoriamente una película de la lista que no haya sido mostrada
+		 */
 		selectRandomMovie() {
 			const availableMovies = this.movies.filter(movie => !this.shownMovies.includes(movie.id));
 			if (availableMovies.length === 0) {
@@ -106,11 +119,19 @@ export default {
 			this.shownMovies.push(selectedMovie.id);
 			return selectedMovie;
 		},
+
+		/**
+		 * Obtiene el elenco de la película seleccionada y muestra el primer actor
+		 */
 		async loadMovieCast() {
 			this.allActors = await getMovieCast(this.currentMovie.id);
 			this.displayedActors = [this.allActors[0]];
 			this.actorIndex = 1;
 		},
+
+		/**
+		 * Genera opciones de respuesta con películas aleatorias mezcladas con la correcta
+		 */
 		generateOptions() {
 			const otherMovies = this.movies
 				.filter((movie) => movie.id !== this.currentMovie.id)
@@ -120,12 +141,27 @@ export default {
 
 			this.options = shuffleArray([...otherMovies, this.currentMovie.title]);
 		},
+
+		/**
+		 * Activa una animación de transición para indicar el inicio de una nueva ronda
+		 */
 		triggerAnimation() {
 			this.isNewRound = true;
 			setTimeout(() => {
 				this.isNewRound = false;
 			}, 500);
 		},
+
+		/**
+		* Verifica si la opción seleccionada es la película correcta y gestiona lo siguiente:
+		* 
+		* - Si la respuesta es correcta, muestra un mensaje y comienza una nueva ronda tras 2 segundos.
+		* - Si la respuesta es incorrecta, reduce los intentos disponibles.
+		* - Si los intentos llegan a 0, muestra la respuesta correcta y reinicia la ronda.
+		* - Si quedan intentos, revela un nuevo actor como pista.
+		* 
+		* @param {string} option - La opción seleccionada por el jugador.
+		*/
 		checkAnswer(option) {
 			this.clickedOptions.push(option);
 
@@ -149,7 +185,7 @@ export default {
 				this.attemptsLeft--;
 
 				if (this.attemptsLeft === 0) {
-					this.feedback = `❌ Incorrecto. La respuesta era: ${this.currentMovie.title}`;
+					this.feedback = `❌ Incorrecto. La respuesta correcta es: "${this.currentMovie.title}"`;
 					this.showFeedback = true;
 					this.isRoundEnded = true;
 

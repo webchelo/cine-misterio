@@ -10,8 +10,8 @@
 			<p>Cine Misterio tiene dos juegos: Adivinar la Película por sus Actores y Adivinar la Película por su Portada.</p>
 			<p>Para jugar, simplemente seleccioná el juego que desees y comenzá a adivinar las películas según las pistas que te son dadas.</p>
 			<p>¡Buena suerte!</p>
-			<router-link to="/actors-game" class="button">Adivinar por Actores</router-link>
-			<router-link to="/cover-game" class="button">Adivinar por Portada</router-link>
+			<!-- <router-link to="/actors-game" class="button">Adivinar por Actores</router-link>
+			<router-link to="/cover-game" class="button">Adivinar por Portada</router-link> -->
 		</div>
 	</div>
 </template>

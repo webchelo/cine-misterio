@@ -1,6 +1,6 @@
 <template>
     <div class="feedback-container">
-      <p>Intentos restantes: {{ attemptsLeft }}</p>
+      <p v-if="attemptsLeft">Intentos restantes: {{ attemptsLeft }}</p>
       <v-alert
         v-if="showFeedback"
         :type="feedbackClass"

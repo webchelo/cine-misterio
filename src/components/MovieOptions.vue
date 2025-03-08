@@ -38,6 +38,17 @@ export default {
         handleClick(option) {
             this.$emit('option-selected', option);
         },
+        
+		/**
+		* Verifica si un botón de opción debe estar deshabilitado.
+		* Un botón se deshabilita en los siguientes casos:
+		* 1. Si la opción ya fue seleccionada por el usuario.
+		* 2. Si no quedan intentos restantes.
+		* 3. Si la ronda ha terminado (isRoundEnded es true).
+		*
+		* @param {string} option - La opción (título de la película) asociada al botón.
+		* @returns {boolean} - `true` si el botón debe estar deshabilitado, `false` en caso contrario.
+		*/
         isButtonDisabled(option) {
             return (
             this.clickedOptions.includes(option) ||
